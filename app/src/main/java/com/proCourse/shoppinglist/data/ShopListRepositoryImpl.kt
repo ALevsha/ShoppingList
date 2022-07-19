@@ -15,6 +15,17 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     private var autoIncrementId = 0
 
+    /**
+     * Для теста чтобы после создания объекта были сразу
+     * добавлены элементы, или вызывались любые методы
+     */
+    init {
+       for (i in 0 until 10){
+           val item = ShopItem("Name $i", i, true)
+           addShopItem(item)
+       }
+    }
+
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID)
             shopItem.id = autoIncrementId++
