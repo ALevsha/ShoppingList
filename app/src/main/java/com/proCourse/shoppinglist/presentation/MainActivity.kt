@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivityTest", it.toString())
             if (count == 0){
                 val item = it[0]
-                viewModel.changeEnableState(item)
+                viewModel.deleteShopItem(item)
                 count++
             }
         }
