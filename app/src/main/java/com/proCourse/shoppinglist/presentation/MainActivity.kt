@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.shopList.observe(this){
+        viewModel.shopList.observe(this){// подписка на liveData
             Log.d("MainActivityTest", it.toString())
         }
         viewModel.getShopList()
