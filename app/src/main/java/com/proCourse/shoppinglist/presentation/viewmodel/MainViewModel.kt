@@ -1,11 +1,11 @@
-package com.proCourse.shoppinglist.presentation
+package com.proCourse.shoppinglist.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.proCourse.shoppinglist.data.ShopListRepositoryImpl
 import com.proCourse.shoppinglist.domain.usecase.DeleteShopItemUseCase
-import com.proCourse.shoppinglist.domain.EditShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.GetShopListUseCase
 import com.proCourse.shoppinglist.domain.model.ShopItem
+import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 
 
 /**

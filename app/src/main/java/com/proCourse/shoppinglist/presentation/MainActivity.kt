@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
+import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
