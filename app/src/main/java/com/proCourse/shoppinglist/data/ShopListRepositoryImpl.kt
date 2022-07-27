@@ -2,8 +2,8 @@ package com.proCourse.shoppinglist.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.proCourse.shoppinglist.domain.ShopItem
-import com.proCourse.shoppinglist.domain.ShopListRepository
+import com.proCourse.shoppinglist.domain.model.ShopItem
+import com.proCourse.shoppinglist.domain.repository.ShopListRepository
 import java.lang.RuntimeException
 
 /**

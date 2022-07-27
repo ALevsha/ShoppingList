@@ -1,4 +1,4 @@
-package com.proCourse.shoppinglist.domain
+package com.proCourse.shoppinglist.domain.model
 
 data class ShopItem(
     /**

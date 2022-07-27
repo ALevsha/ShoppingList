@@ -2,13 +2,12 @@ package com.proCourse.shoppinglist.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.proCourse.shoppinglist.R
-import com.proCourse.shoppinglist.domain.ShopItem
+import com.proCourse.shoppinglist.domain.model.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
