@@ -9,21 +9,24 @@ import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 
 
 /**
- * Наследуемся от ViewModel, т.к. контекст не будет использоваться, иначе наследуемся от AndroidViewModel()
+ * Наследуемся от ViewModel, т.к. контекст не будет использоваться, иначе наследуемся от AndroidViewModel(application)
  */
 class MainViewModel: ViewModel() {
 
     private val repository = ShopListRepositoryImpl // неправильно, т.к. реализация зависит о data
                                                     // чего не должно быть, правильно будет
                                                     // с использованием инъекции зависимостей
+                                                    // Автор считает, что presentation и data
+                                                    // ничего не должны знать друг о друге
 
+    // добавляем 3 useCase
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val deleteShopItemUseCase = DeleteShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
     val shopList = getShopListUseCase.getShopList() // LiveData - хранилище данных,
                                                      // в который можно поместить какой либо объект
-                                                     // и на него можно ПОДПИСАТЬСЯ для плдучения
+                                                     // и на него можно ПОДПИСАТЬСЯ для получения
                                                      // объектов, которые в него помещают
 
 

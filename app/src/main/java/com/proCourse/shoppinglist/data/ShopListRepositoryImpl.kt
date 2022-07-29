@@ -8,7 +8,8 @@ import java.lang.RuntimeException
 
 /**
  * Класс является object, чтобы сделать класс SingleTone'ом,
- * т.е. обращение было к одному и тому же экземпляру. Чтобы обращаться к нему со всех экранов
+ * т.е. обращение было к одному и тому же экземпляру. Чтобы обращаться к нему со всех экранов.
+ * В этом проекте есть схема внутри mainActivity.
  */
 
 object ShopListRepositoryImpl: ShopListRepository {
@@ -32,7 +33,8 @@ object ShopListRepositoryImpl: ShopListRepository {
     }
 
     override fun addShopItem(shopItem: ShopItem) {
-        if (shopItem.id == ShopItem.UNDEFINED_ID)
+        if (shopItem.id == ShopItem.UNDEFINED_ID) // метод используется в др. методе. проверка,
+            // чтобы не менять, если id уже есть
             shopItem.id = autoIncrementId++
         shopList.add(shopItem)
         updateList()
@@ -62,6 +64,7 @@ object ShopListRepositoryImpl: ShopListRepository {
         return shopListLD
     }
 
+    // метод обновления liveData: LiveData.значение = списокОбъектов.копияСпискаОбъектов
     private fun updateList(){
         shopListLD.value = shopList.toList()
     }

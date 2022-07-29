@@ -18,6 +18,6 @@ data class ShopItem(
      */
 
     companion object{
-        const val UNDEFINED_ID = -1
+        const val UNDEFINED_ID = -1 // id еще не установлен
     }
 }
