@@ -29,6 +29,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_shop_enabled"/>
+    <!-- layoutManager можно установить в разметке
+         listItem тоже можно установить в разметке -->
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_shop_item"

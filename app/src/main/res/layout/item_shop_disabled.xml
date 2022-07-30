@@ -12,6 +12,9 @@
     app:cardCornerRadius="4dp"
     app:cardElevation="1dp"
     app:cardUseCompatPadding="true">
+    <!-- cardCornerRadius - радиус скругления углов
+         cardElevation - поднятие view над макетом
+         cardUseCompatPadding - автоматические отступы-->
 
     <LinearLayout
         android:layout_width="match_parent"
