@@ -27,7 +27,7 @@ object ShopListRepositoryImpl: ShopListRepository {
      * добавлены элементы, или вызывались любые методы
      */
     init {
-       for (i in 0 until 10000){
+       for (i in 0 until 1000){
            val item = ShopItem("Name $i", i, Random.nextBoolean())
            addShopItem(item)
        }
