@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.domain.repository.ShopListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 /**
  * Класс является object, чтобы сделать класс SingleTone'ом,
@@ -27,7 +28,7 @@ object ShopListRepositoryImpl: ShopListRepository {
      */
     init {
        for (i in 0 until 10000){
-           val item = ShopItem("Name $i", i, true)
+           val item = ShopItem("Name $i", i, Random.nextBoolean())
            addShopItem(item)
        }
     }
