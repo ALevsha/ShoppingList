@@ -14,8 +14,12 @@
         android:theme="@style/Theme.ShoppingList"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.EditShoppingItem"
+            android:name=".presentation.ShopItemActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
+        <!-- windowSoftInputMode="adjustResize" - атрибут говорит о том,
+        что, если открыта клавиатура, размер экрана необходимо уменьшить,
+        чтобы элементы находились над клавиатурой-->
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true">

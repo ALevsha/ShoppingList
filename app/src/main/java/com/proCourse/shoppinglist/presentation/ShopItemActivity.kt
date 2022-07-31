@@ -1,14 +1,12 @@
 package com.proCourse.shoppinglist.presentation
 
 import android.content.Intent
-import android.content.LocusId
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
 import com.proCourse.shoppinglist.R
-import java.lang.RuntimeException
 
-class EditShoppingItem : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity() {
 
     private lateinit var editTextName: EditText
     private lateinit var editTextCount: EditText
@@ -18,7 +16,7 @@ class EditShoppingItem : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_shopping_item)
+        setContentView(R.layout.activity_shop_item)
         editTextName = findViewById(R.id.editTextName)
         editTextCount = findViewById(R.id.editTextCount)
         val oldName = intent.getStringExtra("name")

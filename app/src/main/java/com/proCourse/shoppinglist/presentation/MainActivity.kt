@@ -3,7 +3,6 @@ package com.proCourse.shoppinglist.presentation
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -83,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            val editActivityIntent = Intent(this, EditShoppingItem::class.java)
+            val editActivityIntent = Intent(this, ShopItemActivity::class.java)
             editActivityIntent.putExtra("name", it.name)
             editActivityIntent.putExtra("count", it.count.toString())
             editActivityIntent.putExtra("id", it.id.toString())
