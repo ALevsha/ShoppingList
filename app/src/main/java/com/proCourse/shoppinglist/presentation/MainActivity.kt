@@ -28,7 +28,9 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {// подписка на liveData
-            shopListAdapter.shopList = it
+            /*изменения логики - в RecyclerView...ListAdapter по другому присваиваются списки:
+            * Запускается новый поток, в котором и происходят все вычисления относительно списков*/
+            shopListAdapter.submitList(it)
         }
     }
 
@@ -72,7 +74,8 @@ class MainActivity : AppCompatActivity() {
             /*Перегрузка метода удаления*/
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val deleteShopItem: ShopItem =
-                    shopListAdapter.shopList[viewHolder.adapterPosition]
+                    /*для получения списка адаптера в ListAdapter используется поле currentList*/
+                    shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(deleteShopItem)
             }
         }).attachToRecyclerView(rvShopList)/*подключение TouchHelper'a к RecyclerView*/
