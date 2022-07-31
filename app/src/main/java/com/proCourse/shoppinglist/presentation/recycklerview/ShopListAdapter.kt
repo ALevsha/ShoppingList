@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
@@ -16,8 +17,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     var shopList = listOf<ShopItem>()
         // переопределение сеттера при установке значения снаружи
         set(value) {
+            // создание коллбэка для сравнения старого и нового списков
+            val callback = ShopListDiffCallback(shopList, value)
+            // создание объекта со всеми изменениями(DiffUtil.calculateDiff(callback) их сичтает)
+            val diffResult = DiffUtil.calculateDiff(callback)
+            // применение изменений к адаптеру(в этом случае адаптер - this)
+            diffResult.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
         }
 
     /*эта переменная var чтобы этот слушатель устанавливался при необходимости, а до этого был null
@@ -34,8 +40,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         // как создавать view
-        Log.d("ViewHolderStatus", "number ${++count}")
-
         val layout = when (viewType) {
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
@@ -47,6 +51,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         // как вставить значения внутри этого view
+        Log.d("onBindViewHolder", "number ${++count}")
         val shopItem = shopList[position]
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
