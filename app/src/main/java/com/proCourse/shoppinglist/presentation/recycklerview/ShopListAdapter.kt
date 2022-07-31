@@ -20,6 +20,17 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
             notifyDataSetChanged()
         }
 
+    /*эта переменная var чтобы этот слушатель устанавливался при необходимости, а до этого был null
+    так обычно делают, если пишут на Java
+    var onShopItemLongClickListener: OnShopItemLongClickListener? = null
+    т.к OnShopItemClickListener - функциональный интерфейс с 1 методом, его можно заменить
+    лямбда-выражением. Эту функцию можно создать и сохранить в переменную.
+    Unit -> ничего не возвращает. Тип оформлен в знак вопроса => может лежать либо null,
+    либо функция (ShopItem) -> Unit*/
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         // как создавать view
         Log.d("ViewHolderStatus", "number ${++count}")
@@ -39,8 +50,15 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
         viewHolder.itemView.setOnLongClickListener {
-            //viewModel.changeEnableState(shopItem)
+            //viewModel.changeEnableState(shopItem) нельзя в адаптере обращаться к методам activity
+            // для выполнения логики используется связка интерфейс-реализация
+            //onShopItemLongClickListener?.onShopItemLongClick(shopItem)
+            onShopItemLongClickListener?.invoke(shopItem)
+            // invoke - перегрузка операндов
             true
+        }
+        viewHolder.itemView.setOnClickListener {
+            onShopItemClickListener?.invoke(shopItem)
         }
     }
 
@@ -66,6 +84,16 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     class ShopItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvName = view.findViewById<TextView>(R.id.tv_name)
         val tvCount = view.findViewById<TextView>(R.id.tv_count)
+    }
+
+    interface OnShopItemLongClickListener {
+
+        fun onShopItemLongClick(shopItem: ShopItem)
+    }
+
+    interface OnShopItemClickListener {
+
+        fun onShopItemClick(shopItem: ShopItem)
     }
 
     companion object {

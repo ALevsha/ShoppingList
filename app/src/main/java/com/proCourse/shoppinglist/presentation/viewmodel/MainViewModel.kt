@@ -34,6 +34,10 @@ class MainViewModel: ViewModel() {
         deleteShopItemUseCase.deleteShopItem(shopItem)
     }
 
+    fun editShopItem(shopItem: ShopItem){
+        editShopItemUseCase.editShopItem(shopItem)
+    }
+
     fun changeEnableState(shopItem: ShopItem){
         // у data class метод copy переопределен
         val newItem = shopItem.copy(enabled = !shopItem.enabled) // т.к. enabled val
