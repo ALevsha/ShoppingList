@@ -21,7 +21,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         }
 
     /*эта переменная var чтобы этот слушатель устанавливался при необходимости, а до этого был null
-    так обычно делают, если пишут на Java
+    так обычно делают, если пишут на Javathis method is called
+                // when the item is moved.
     var onShopItemLongClickListener: OnShopItemLongClickListener? = null
     т.к OnShopItemClickListener - функциональный интерфейс с 1 методом, его можно заменить
     лямбда-выражением. Эту функцию можно создать и сохранить в переменную.
