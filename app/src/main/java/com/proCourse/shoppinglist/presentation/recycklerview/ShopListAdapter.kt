@@ -1,30 +1,15 @@
 package com.proCourse.shoppinglist.presentation.recycklerview
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
-import java.lang.RuntimeException
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+class ShopListAdapter :
+    androidx.recyclerview.widget.ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
-    var count = 0
-    var shopList = listOf<ShopItem>()
-        // переопределение сеттера при установке значения снаружи
-        set(value) {
-            // создание коллбэка для сравнения старого и нового списков
-            val callback = ShopListDiffCallback(shopList, value)
-            // создание объекта со всеми изменениями(DiffUtil.calculateDiff(callback) их сичтает)
-            val diffResult = DiffUtil.calculateDiff(callback)
-            // применение изменений к адаптеру(в этом случае адаптер - this)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }
+    /*androidx.recyclerview.widget.ListAdapter удобен тем, что скрывает всю логику работы со списками
+    * нет необходимости за ними следить + есть свои методы для получения списка, элементов и т.п*/
 
     /*эта переменная var чтобы этот слушатель устанавливался при необходимости, а до этого был null
     так обычно делают, если пишут на Javathis method is called
@@ -51,8 +36,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         // как вставить значения внутри этого view
-        Log.d("onBindViewHolder", "number ${++count}")
-        val shopItem = shopList[position]
+        val shopItem = getItem(position)
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
         viewHolder.itemView.setOnLongClickListener {
@@ -68,29 +52,16 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         }
     }
 
-    override fun onViewRecycled(viewHolder: ShopItemViewHolder) {
-        // действие, выполняемое при переиспользовании объекта адаптера
-        // (ставим значения пол умолчанию)
-        super.onViewRecycled(viewHolder)
-        viewHolder.tvName.text = ""
-        viewHolder.tvCount.text = ""
-    }
-
-    override fun getItemCount(): Int {
-        return shopList.size
-    }
+    // onViewRecycled больше не нужен, т.к. ListAdapter сам занимается списками
 
     override fun getItemViewType(position: Int): Int {
-        return if (shopList[position].enabled)
+        return if (getItem(position).enabled)
             VIEW_TYPE_ENABLED
         else
             VIEW_TYPE_DISABLED
     }
 
-    class ShopItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvName = view.findViewById<TextView>(R.id.tv_name)
-        val tvCount = view.findViewById<TextView>(R.id.tv_count)
-    }
+
 
     companion object {
         // константы выводятся в объекте-компаньоне
