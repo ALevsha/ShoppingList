@@ -3,7 +3,9 @@ package com.proCourse.shoppinglist.presentation
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
@@ -45,18 +47,38 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.MAX_POOL_SIZE
             )
         }
-        // пример использования анонимного класса для реализации интерфейа
-        /* shopListAdapter.onShopItemLongClickListener =
-             object : ShopListAdapter.OnShopItemLongClickListener {
-                 override fun onShopItemLongClick(shopItem: ShopItem) {
-                     viewModel.changeEnableState(shopItem)
-                 }
-             }*/
 
-        shopListAdapter.onShopItemLongClickListener =
-            {
-                viewModel.changeEnableState(it)
+        setupLongClickListener()
+
+        setupClickListener()
+
+        setupTouchHelper(rvShopList)
+    }
+
+    private fun setupTouchHelper(rvShopList: RecyclerView) {
+        ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(
+                0/*модификатор перемещения*/,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)/*модификатор удаления*/
+        {
+            /*перегрузка метода перемещения*/
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
             }
+            /*Перегрузка метода удаления*/
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val deleteShopItem: ShopItem =
+                    shopListAdapter.shopList[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(deleteShopItem)
+            }
+        }).attachToRecyclerView(rvShopList)/*подключение TouchHelper'a к RecyclerView*/
+    }
+
+    private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
             val editActivityIntent = Intent(this, EditShoppingItem::class.java)
             editActivityIntent.putExtra("name", it.name)
@@ -65,6 +87,20 @@ class MainActivity : AppCompatActivity() {
             editActivityIntent.putExtra("enabled", it.enabled.toString())
             startActivityForResult(editActivityIntent, EDIT_SHOP_ITEM_ACTIVITY_CODE)
         }
+    }
+
+    private fun setupLongClickListener() {
+        // пример использования анонимного класса для реализации интерфейа
+        /* shopListAdapter.onShopItemLongClickListener =
+             object : ShopListAdapter.OnShopItemLongClickListener {
+                 override fun onShopItemLongClick(shopItem: ShopItem) {
+                     viewModel.changeEnableState(shopItem)
+                 }
+             }*/
+        shopListAdapter.onShopItemLongClickListener =
+            {
+                viewModel.changeEnableState(it)
+            }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
