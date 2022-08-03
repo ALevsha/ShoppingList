@@ -1,13 +1,14 @@
 package com.proCourse.shoppinglist.presentation.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.proCourse.shoppinglist.data.ShopListRepositoryImpl
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.domain.usecase.AddShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.GetShopItemUseCase
-import com.proCourse.shoppinglist.domain.usecase.GetShopListUseCase
 
 class ShopItemViewModel : ViewModel() {
     private val repository = ShopListRepositoryImpl
@@ -16,17 +17,46 @@ class ShopItemViewModel : ViewModel() {
     private val addShopItemUseCase = AddShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
+    // объект LiveData для отображения ошибки ввода имени. Через нее общаются view с viewModel
+
+    // для отделения переменной от использования в других классах
+    // в Kotlin используют следующий метод
+    private val _errorInputName =
+        MutableLiveData<Boolean>() // приватная переменная для местного класса
+    val errorInputName: LiveData<Boolean> // публичная переменная для других классов.
+        // в классе LiveData сеттеры и геттеры имеют модификатор protected
+        // и, => изменить значение нельзя
+        get() = _errorInputName // с геттером, которая возвращает значение приватной
+
+    // объект LiveData для отображения ошибки ввода количества. Через нее общаются view с viewModel
+    private val _errorInputCount = MutableLiveData<Boolean>()
+    val errorInputCount: LiveData<Boolean>
+        get() = _errorInputCount
+
+    // объект LiveData для получения объекта ShopItem по id. Через нее общаются view с viewModel
+    private val _shopItem = MutableLiveData<ShopItem>()
+    val shopItem: LiveData<ShopItem>
+        get() = _shopItem
+
+    // объект LiveData для ожидания окончания всех операций с объектом ShopItem.
+    // Через нее общаются view с viewModel
+    private val _shouldCloseScreen = MutableLiveData<Unit>()
+    val shouldCloseScreen: LiveData<Unit>
+        get() = _shouldCloseScreen
+
     fun getShopItem(shopItemId: Int) {
-        getShopItemUseCase.getShopItem(shopItemId)
+        val item = getShopItemUseCase.getShopItem(shopItemId)
+        _shopItem.value = item
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
-        if (fieldsValid){
+        if (fieldsValid) {
             val shopItem = ShopItem(name, count, true)
             addShopItemUseCase.addShopItem(shopItem = shopItem)
+            finishWork()
         }
     }
 
@@ -35,34 +65,51 @@ class ShopItemViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, count, true)
-            editShopItemUseCase.editShopItem(shopItem)
+            _shopItem.value?.let {// если объект получен успешно, и не == null,
+                                  // выполнится лямбда в let {}
+                val item = it.copy(name = name, count = count)
+                editShopItemUseCase.editShopItem(item)
+                finishWork()
+            }
         }
     }
 
-    private fun parseName(inputName: String?): String{
+    private fun parseName(inputName: String?): String {
         return inputName?.trim() ?: ""
     }
 
-    private fun parseCount(inputCount: String?): Int{
+    private fun parseCount(inputCount: String?): Int {
         return try {
             inputCount?.trim()?.toInt() ?: 0
-        } catch (e: Exception){
+        } catch (e: Exception) {
             Log.w("EditingCountValue", "Unavailable value: $inputCount")
             0
         }
     }
 
-    private fun validateInput(name: String, count: Int): Boolean{
+    private fun validateInput(name: String, count: Int): Boolean {
         var result = true
         if (name.isBlank()) {
-            //TODO: show error input name
+            _errorInputName.value = true
             result = false
         }
-        if(count <= 0) {
-            //TODO: show error input count
+        if (count <= 0) {
+            _errorInputCount.value = true
             result = false
         }
         return result
+    }
+
+    // метод будет вызываться из activity, его надо оставить публичным
+    fun resetErrorInputName() {
+        _errorInputName.value = false
+    }
+
+    fun resetErrorInputCount() {
+        _errorInputCount.value = false
+    }
+
+    private fun finishWork() {
+        _shouldCloseScreen.value = Unit
     }
 }
