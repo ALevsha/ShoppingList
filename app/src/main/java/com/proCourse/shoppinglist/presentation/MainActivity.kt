@@ -20,10 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
 
-    companion object {
-        const val EDIT_SHOP_ITEM_ACTIVITY_CODE = 1
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -109,30 +105,6 @@ class MainActivity : AppCompatActivity() {
             {
                 viewModel.changeEnableState(it)
             }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (data != null) {
-            when (requestCode) {
-                EDIT_SHOP_ITEM_ACTIVITY_CODE -> {
-                    if (resultCode == RESULT_OK) {
-                        val newShopItemName = data.getStringExtra("name")
-                        val newShopItemCount = data.getStringExtra("count")
-                        val newShopItemId = data.getStringExtra("id")
-                        val newShopItemEnabled = data.getStringExtra("enabled")
-                        val editingShopItem = ShopItem(
-                            name = newShopItemName.toString(),
-                            count = newShopItemCount?.toInt()!!,
-                            id = newShopItemId?.toInt()!!,
-                            enabled = newShopItemEnabled?.toBoolean()!!
-                        )
-                        viewModel.editShopItem(editingShopItem)
-                    }
-                }
-                else -> throw RuntimeException("Unknown request code $requestCode")
-            }
-        }
     }
 }
 
