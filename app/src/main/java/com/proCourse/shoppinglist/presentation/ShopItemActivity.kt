@@ -5,17 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
-import java.lang.RuntimeException
 
 class ShopItemActivity : AppCompatActivity() {
 
@@ -38,14 +35,59 @@ class ShopItemActivity : AppCompatActivity() {
         */
         parseIntent()
         viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
+        // инициализация view элементов
         initViews()
 
+        addTextChangeListeners()
 
+        // установка режимов работы
+        launchRightMode()
+
+        // подписка на все объекты ViewModel
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        // подписка на выявление ошибки поля ввода count
+        viewModel.errorInputCount.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_count)
+            } else {
+                null
+            }
+            tilCount.error = message
+        }
+
+        // подписка на выявление ошибки поля ввода name
+        viewModel.errorInputName.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_name)
+            } else {
+                null
+            }
+            tilName.error = message
+        }
+
+        // подписка на выявление завершения работы activity
+        viewModel.shouldCloseScreen.observe(this) {
+            finish()
+        }
+    }
+
+    private fun launchRightMode() {
+        when (screenMode) {
+            MODE_EDIT -> launchEditMode()
+            MODE_ADD -> launchAddMode()
+        }
+    }
+
+    private fun addTextChangeListeners() {
+        // установка слушателей изменения текста
         etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                tilName.error = null
+                viewModel.resetErrorInputName()
             }
 
             override fun afterTextChanged(p0: Editable?) {}
@@ -55,62 +97,29 @@ class ShopItemActivity : AppCompatActivity() {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                tilCount.error = null
+                viewModel.resetErrorInputCount()
             }
 
             override fun afterTextChanged(p0: Editable?) {}
         })
-        when (screenMode) {
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
-        }
     }
 
+    // действия при редактировании объекта
     private fun launchEditMode() {
         viewModel.getShopItem(shopItemId)
-        val oldName = viewModel.shopItem.value?.name.toString()
-        etName.setText(oldName)
-        val oldCount = viewModel.shopItem.value?.count.toString()
-        etCount.setText(oldCount.toString())
+        viewModel.shopItem.observe(this){
+            etName.setText(it.name)
+            etCount.setText(it.count.toString())
+        }
         buttonSave.setOnClickListener {
-            val newName = etName.text.toString()
-            val newCount = etCount.text.toString()
-            if (oldName != newName ||
-                oldCount != newCount
-            ) {
-                viewModel.editShopItem(newName, newCount)
-                when {
-                    viewModel.errorInputName.value == true
-                            && viewModel.errorInputCount.value == true -> {
-                        tilName.error = "Unavailable name"
-                        tilCount.error = "Unavailable count"
-                    }
-                    viewModel.errorInputName.value == true -> tilName.error = "Unavailable name"
-                    viewModel.errorInputCount.value == true -> tilCount.error = "Unavailable count"
-                    else -> {
-
-                        finish()
-                    }
-                }
-            }
+            viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
         }
     }
 
+    // действия при создании объекта
     private fun launchAddMode() {
         buttonSave.setOnClickListener {
-            val name = etName.text.toString()
-            val count = etCount.text.toString()
-            viewModel.addShopItem(name, count)
-            when {
-                viewModel.errorInputName.value == true
-                        && viewModel.errorInputCount.value == true -> {
-                    tilName.error = "Unavailable name"
-                    tilCount.error = "Unavailable count"
-                }
-                viewModel.errorInputName.value == true -> tilName.error = "Unavailable name"
-                viewModel.errorInputCount.value == true -> tilCount.error = "Unavailable count"
-                else -> finish()
-            }
+            viewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
         }
     }
 

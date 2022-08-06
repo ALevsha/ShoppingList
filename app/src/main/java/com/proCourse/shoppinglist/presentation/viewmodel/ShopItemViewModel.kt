@@ -66,7 +66,7 @@ class ShopItemViewModel : ViewModel() {
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
             _shopItem.value?.let {// если объект получен успешно, и не == null,
-                                  // выполнится лямбда в let {}
+                // выполнится лямбда в let {}
                 val item = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(item)
                 finishWork()
@@ -110,8 +110,6 @@ class ShopItemViewModel : ViewModel() {
     }
 
     private fun finishWork() {
-        resetErrorInputName()
-        resetErrorInputCount()
         _shouldCloseScreen.value = Unit
     }
 }
