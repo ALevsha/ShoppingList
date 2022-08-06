@@ -6,8 +6,11 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
+import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newIntentAddItem
+import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
 import com.proCourse.shoppinglist.presentation.recycklerview.ShopListAdapter
 import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 import java.lang.RuntimeException
@@ -30,6 +33,12 @@ class MainActivity : AppCompatActivity() {
             /*изменения логики - в RecyclerView...ListAdapter по другому присваиваются списки:
             * Запускается новый поток, в котором и происходят все вычисления относительно списков*/
             shopListAdapter.submitList(it)
+        }
+        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+
+        buttonAddItem.setOnClickListener {
+            val intent = newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -60,8 +69,8 @@ class MainActivity : AppCompatActivity() {
         ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(
                 0/*модификатор перемещения*/,
-                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)/*модификатор удаления*/
-        {
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            )/*модификатор удаления*/ {
             /*перегрузка метода перемещения*/
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -70,6 +79,7 @@ class MainActivity : AppCompatActivity() {
             ): Boolean {
                 return false
             }
+
             /*Перегрузка метода удаления*/
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val deleteShopItem: ShopItem =
@@ -82,12 +92,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            val editActivityIntent = Intent(this, ShopItemActivity::class.java)
-            editActivityIntent.putExtra("name", it.name)
-            editActivityIntent.putExtra("count", it.count.toString())
-            editActivityIntent.putExtra("id", it.id.toString())
-            editActivityIntent.putExtra("enabled", it.enabled.toString())
-            startActivityForResult(editActivityIntent, EDIT_SHOP_ITEM_ACTIVITY_CODE)
+            val intent = newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
