@@ -16,16 +16,16 @@ import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
 
 class ShopItemActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ShopItemViewModel
-
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tilCount: TextInputLayout
-    private lateinit var etName: EditText
-    private lateinit var etCount: EditText
-    private lateinit var buttonSave: Button
-
-    private var screenMode = MODE_UNKNOWN
-    private var shopItemId = ShopItem.UNDEFINED_ID
+//    private lateinit var viewModel: ShopItemViewModel
+//
+//    private lateinit var tilName: TextInputLayout
+//    private lateinit var tilCount: TextInputLayout
+//    private lateinit var etName: EditText
+//    private lateinit var etCount: EditText
+//    private lateinit var buttonSave: Button
+//
+//    private var screenMode = MODE_UNKNOWN
+//    private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,125 +33,125 @@ class ShopItemActivity : AppCompatActivity() {
         /*
         необходимо знать режим запуска
         */
-        parseIntent()
-        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
-        // инициализация view элементов
-        initViews()
-
-        addTextChangeListeners()
-
-        // установка режимов работы
-        launchRightMode()
-
-        // подписка на все объекты ViewModel
-        observeViewModel()
+//        parseIntent()
+//        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
+//        // инициализация view элементов
+//        initViews()
+//
+//        addTextChangeListeners()
+//
+//        // установка режимов работы
+//        launchRightMode()
+//
+//        // подписка на все объекты ViewModel
+//        observeViewModel()
     }
 
-    private fun observeViewModel() {
-        // подписка на выявление ошибки поля ввода count
-        viewModel.errorInputCount.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_count)
-            } else {
-                null
-            }
-            tilCount.error = message //показ ошибки делается через объект контейнера для TextEdit
-                                     //смотри в xml
-        }
-
-        // подписка на выявление ошибки поля ввода name
-        viewModel.errorInputName.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_name)
-            } else {
-                null
-            }
-            tilName.error = message
-        }
-
-        // подписка на выявление завершения работы activity
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
-        }
-    }
-
-    private fun launchRightMode() {
-        when (screenMode) {
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
-        }
-    }
-
-    private fun addTextChangeListeners() {
-        // установка слушателей изменения текста
-        etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputName()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {}
-        })
-
-        etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.resetErrorInputCount()
-            }
-
-            override fun afterTextChanged(p0: Editable?) {}
-        })
-    }
-
-    // действия при редактировании объекта
-    private fun launchEditMode() {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this){
-            etName.setText(it.name)
-            etCount.setText(it.count.toString())
-        }
-        buttonSave.setOnClickListener {
-            viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
-        }
-    }
-
-    // действия при создании объекта
-    private fun launchAddMode() {
-        buttonSave.setOnClickListener {
-            viewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
-        }
-    }
-
-    private fun parseIntent() {
-        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
-            throw RuntimeException("Param screen mode is absent")
-        }
-
-        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-        if (mode != MODE_EDIT && mode != MODE_ADD) {
-            throw RuntimeException("Unknown screen mode $mode")
-        }
-        screenMode = mode
-
-        if (screenMode == MODE_EDIT) {
-            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
-                throw RuntimeException("Param shop item id is absent")
-            }
-            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-        }
-
-
-    }
-
-    private fun initViews() {
-        tilName = findViewById(R.id.til_name)
-        tilCount = findViewById(R.id.til_count)
-        etName = findViewById(R.id.et_name)
-        etCount = findViewById(R.id.et_count)
-        buttonSave = findViewById(R.id.save_button)
-    }
+//    private fun observeViewModel() {
+//        // подписка на выявление ошибки поля ввода count
+//        viewModel.errorInputCount.observe(this) {
+//            val message = if (it) {
+//                getString(R.string.error_input_count)
+//            } else {
+//                null
+//            }
+//            tilCount.error = message //показ ошибки делается через объект контейнера для TextEdit
+//                                     //смотри в xml
+//        }
+//
+//        // подписка на выявление ошибки поля ввода name
+//        viewModel.errorInputName.observe(this) {
+//            val message = if (it) {
+//                getString(R.string.error_input_name)
+//            } else {
+//                null
+//            }
+//            tilName.error = message
+//        }
+//
+//        // подписка на выявление завершения работы activity
+//        viewModel.shouldCloseScreen.observe(this) {
+//            finish()
+//        }
+//    }
+//
+//    private fun launchRightMode() {
+//        when (screenMode) {
+//            MODE_EDIT -> launchEditMode()
+//            MODE_ADD -> launchAddMode()
+//        }
+//    }
+//
+//    private fun addTextChangeListeners() {
+//        // установка слушателей изменения текста
+//        etName.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                viewModel.resetErrorInputName()
+//            }
+//
+//            override fun afterTextChanged(p0: Editable?) {}
+//        })
+//
+//        etCount.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+//                viewModel.resetErrorInputCount()
+//            }
+//
+//            override fun afterTextChanged(p0: Editable?) {}
+//        })
+//    }
+//
+//    // действия при редактировании объекта
+//    private fun launchEditMode() {
+//        viewModel.getShopItem(shopItemId)
+//        viewModel.shopItem.observe(this){
+//            etName.setText(it.name)
+//            etCount.setText(it.count.toString())
+//        }
+//        buttonSave.setOnClickListener {
+//            viewModel.editShopItem(etName.text?.toString(), etCount.text?.toString())
+//        }
+//    }
+//
+//    // действия при создании объекта
+//    private fun launchAddMode() {
+//        buttonSave.setOnClickListener {
+//            viewModel.addShopItem(etName.text?.toString(), etCount.text?.toString())
+//        }
+//    }
+//
+//    private fun parseIntent() {
+//        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
+//            throw RuntimeException("Param screen mode is absent")
+//        }
+//
+//        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
+//        if (mode != MODE_EDIT && mode != MODE_ADD) {
+//            throw RuntimeException("Unknown screen mode $mode")
+//        }
+//        screenMode = mode
+//
+//        if (screenMode == MODE_EDIT) {
+//            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
+//                throw RuntimeException("Param shop item id is absent")
+//            }
+//            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
+//        }
+//
+//
+//    }
+//
+//    private fun initViews() {
+//        tilName = findViewById(R.id.til_name)
+//        tilCount = findViewById(R.id.til_count)
+//        etName = findViewById(R.id.et_name)
+//        etCount = findViewById(R.id.et_count)
+//        buttonSave = findViewById(R.id.save_button)
+//    }
 
     /*
     чтобы не ошибаться в EXTRA - полях интентов, их значения выносятся в константы.
