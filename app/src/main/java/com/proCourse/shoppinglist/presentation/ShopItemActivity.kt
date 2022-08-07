@@ -55,7 +55,8 @@ class ShopItemActivity : AppCompatActivity() {
             } else {
                 null
             }
-            tilCount.error = message
+            tilCount.error = message //показ ошибки делается через объект контейнера для TextEdit
+                                     //смотри в xml
         }
 
         // подписка на выявление ошибки поля ввода name
