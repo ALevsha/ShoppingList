@@ -16,17 +16,13 @@ import com.google.android.material.textfield.TextInputLayout
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
-
-class ShopItemFragment(
-    /*
+/*
     * В конструктор класса, который наследуется от фрагмента нельзя передавать
     * переменные, т.к эти данные будут правильно отображены только 1 раз т.к,
-    * в отличие от activity, фрагмент не пересоздается при закрытии.
-    * Также Fragment является системным объектом, т.е его конструктор изменять нельзя
-    * */
-    private val screenMode: String = MODE_UNKNOWN,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+    * при закрытии (переворот экрана) система вызывает конструктор по умолчанию
+    * без параметров, который является системным.
+    */
+class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
 
@@ -35,6 +31,9 @@ class ShopItemFragment(
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
     private lateinit var buttonSave: Button
+
+    private var screenMode: String = MODE_UNKNOWN
+    private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
     // В этом методе из макета создается view
     override fun onCreateView(
@@ -47,6 +46,12 @@ class ShopItemFragment(
     }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // перенос в onCreate т.к параметры должны быть известны до создания view
+        parseParams()
+    }
+
     // этот метод обозначает создание view на экране фрагмента и тот момент,
     // когда с этой view можно начинать работать
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +59,7 @@ class ShopItemFragment(
         /*
         необходимо знать режим запуска
         */
-        parseParams()
+//        parseParams()
         viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
         // инициализация view элементов
         initViews(view)
@@ -162,11 +167,26 @@ class ShopItemFragment(
         /*if (!requireActivity().intent.hasExtra(EXTRA_SCREEN_MODE)) {
             throw RuntimeException("Param screen mode is absent")
         }*/
-        if (screenMode != MODE_EDIT && screenMode != MODE_ADD) {
+
+        // здесь применим requireArguments() т.к с точки зрения архитектуры
+        // null прилететь не может
+        val args = requireArguments()
+        // Bundle().containsKey() говорит, есть ли ключ в словаре?
+        if (!args.containsKey(SCREEN_MODE)) {
             throw RuntimeException("Param screen mode is absent")
         }
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-            throw RuntimeException("Param shop item is absent")
+
+        val mode = args.getString(SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown screen mode $mode")
+        }
+        screenMode = mode
+
+        if (screenMode == MODE_EDIT) {
+            if (!args.containsKey(SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
 
 
@@ -186,31 +206,31 @@ class ShopItemFragment(
     следующие методы, формирующие интенты для вызова др. activity в нужном режиме
      */
     companion object {
-        private const val EXTRA_SCREEN_MODE = "extra_mode"
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val SCREEN_MODE = "extra_mode"
+        private const val SHOP_ITEM_ID = "extra_shop_item_id"
         private const val MODE_EDIT = "mode_edit"
         private const val MODE_ADD = "mode_add"
         private const val MODE_UNKNOWN = ""
 
+        // статический метод по созданию экземпляра объекта
         fun newInstanceAddItem(): ShopItemFragment{
-            return ShopItemFragment(MODE_ADD)
+            // метод в стиле Kotlin
+            return ShopItemFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCREEN_MODE, MODE_ADD)
+                }
+            }
         }
 
         fun newInstanceEditItem(shopItemId: Int): ShopItemFragment{
-            return ShopItemFragment(MODE_EDIT,shopItemId)
-        }
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_ADD)
-            return intent
-        }
-
-        fun newIntentEditItem(context: Context, shopItemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, MODE_EDIT)
-            intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
-            return intent
+            // метод не совсем в стиле Java
+            val args = Bundle().apply {
+                putString(SCREEN_MODE, MODE_EDIT)
+                putInt(SHOP_ITEM_ID, shopItemId)
+            }
+            val fragment = ShopItemFragment()
+            fragment.arguments = args
+            return fragment
         }
     }
 }
