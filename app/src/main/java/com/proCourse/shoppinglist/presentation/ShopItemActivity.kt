@@ -24,8 +24,8 @@ class ShopItemActivity : AppCompatActivity() {
 //    private lateinit var etCount: EditText
 //    private lateinit var buttonSave: Button
 //
-//    private var screenMode = MODE_UNKNOWN
-//    private var shopItemId = ShopItem.UNDEFINED_ID
+    private var screenMode = MODE_UNKNOWN
+    private var shopItemId = ShopItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +33,16 @@ class ShopItemActivity : AppCompatActivity() {
         /*
         необходимо знать режим запуска
         */
-//        parseIntent()
+        parseIntent()
+
 //        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
 //        // инициализация view элементов
 //        initViews()
 //
 //        addTextChangeListeners()
 //
-//        // установка режимов работы
-//        launchRightMode()
+        // установка режимов работы
+        launchRightMode()
 //
 //        // подписка на все объекты ViewModel
 //        observeViewModel()
@@ -75,12 +76,32 @@ class ShopItemActivity : AppCompatActivity() {
 //        }
 //    }
 //
-//    private fun launchRightMode() {
-//        when (screenMode) {
-//            MODE_EDIT -> launchEditMode()
-//            MODE_ADD -> launchAddMode()
-//        }
-//    }
+
+    //
+    private fun launchRightMode() {
+        // выбор фрагмента для отображения в зависимости от режима работы
+        // методы возвращают фрагмент, который уже будет настроен на определенный
+        // режим работы
+        val fragment = when (screenMode) {
+            /*
+            Для фрагментов, как и для интентов лучше создавать статические фабричные методы,
+            которые будут создавать фрагмент и возвращать новый его экземпляр.
+            Методы реализуются в объекте-компаньоне фрагмента
+             */
+            MODE_EDIT   -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD    -> ShopItemFragment.newInstanceAddItem()
+            else        -> throw RuntimeException("Unknown screen mode $screenMode")
+        }
+    /* для работы с фрагментами используется класс supportFragmentManager
+    (getSupportFragmentManager() Java). Для отображения фрагмента используется метод
+    beginTransaction(). Т.к макетов раньше не отображалось, то используется метод add(),
+    на вход которого идет id контейнера и сам фрагмент. Далее методом comit() транзакция
+    будет запущена на выполнение
+     */
+    supportFragmentManager.beginTransaction()
+        .add(R.id.shop_item_container, fragment)
+        .commit()
+    }
 //
 //    private fun addTextChangeListeners() {
 //        // установка слушателей изменения текста
@@ -124,26 +145,26 @@ class ShopItemActivity : AppCompatActivity() {
 //        }
 //    }
 //
-//    private fun parseIntent() {
-//        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
-//            throw RuntimeException("Param screen mode is absent")
-//        }
-//
-//        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-//        if (mode != MODE_EDIT && mode != MODE_ADD) {
-//            throw RuntimeException("Unknown screen mode $mode")
-//        }
-//        screenMode = mode
-//
-//        if (screenMode == MODE_EDIT) {
-//            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
-//                throw RuntimeException("Param shop item id is absent")
-//            }
-//            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-//        }
-//
-//
-//    }
+    private fun parseIntent() {
+        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
+            throw RuntimeException("Param screen mode is absent")
+        }
+
+        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+            throw RuntimeException("Unknown screen mode $mode")
+        }
+        screenMode = mode
+
+        if (screenMode == MODE_EDIT) {
+            if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
+            }
+            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
+        }
+
+
+    }
 //
 //    private fun initViews() {
 //        tilName = findViewById(R.id.til_name)
