@@ -2,4 +2,6 @@
     <string name="app_name">ShoppingList</string>
     <string name="error_input_count">Unavailable count</string>
     <string name="error_input_name">Unawailable name</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
