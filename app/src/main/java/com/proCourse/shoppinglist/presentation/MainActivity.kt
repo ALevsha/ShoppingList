@@ -1,8 +1,9 @@
 package com.proCourse.shoppinglist.presentation
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -13,16 +14,17 @@ import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newInt
 import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
 import com.proCourse.shoppinglist.presentation.recycklerview.ShopListAdapter
 import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
-import java.lang.RuntimeException
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
+    private var fragmentContainerView : FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        fragmentContainerView = findViewById(R.id.shop_item_container)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {// подписка на liveData
@@ -33,8 +35,14 @@ class MainActivity : AppCompatActivity() {
         val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
 
         buttonAddItem.setOnClickListener {
-            val intent = newIntentAddItem(this)
-            startActivity(intent)
+            if (isOnePaneMode()) {
+                val intent = newIntentAddItem(this)
+                startActivity(intent)
+            }
+            else{
+                val fragment = ShopItemFragment.newInstanceAddItem()
+                launchFragment(fragment)
+            }
         }
     }
 
@@ -88,10 +96,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            val intent = newIntentEditItem(this, it.id)
-            startActivity(intent)
+            if (isOnePaneMode()) {
+                val intent = newIntentEditItem(this, it.id)
+                startActivity(intent)
+            }
+            else{
+                val fragment = ShopItemFragment.newInstanceEditItem(it.id)
+                launchFragment(fragment)
+            }
         }
     }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack() // очистит backStack, если там что-то было
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shop_item_container, fragment)
+            /*
+            при использовании имен фрагментов в методе addToBackStack() каждому фрагменту
+             присваивается переданное имя, которое можно использовать в системных методах типа
+             onBackPressed(<name> <- вот эта метка, <флаг> <- значение этого флага определяет
+             порядок удаления элементов из backStack. 0 - то элементы с именем <name> не будут
+             удалены...)
+             */
+            .addToBackStack(null)
+                /* при использовании фрагмена в обычном режиме,  ShopItemActivity добавляется
+                в backStack. В логике фрагмента прописано, что при окончании работы для выхода
+                из activity по окончании работы используется имитация нажатия кнопки назад.
+                В этом случае ShopItemActivity будет закрыта и в backStack на верхний уровень снова
+                вернется MainActivity. При альбомной ориентации чтобы добавить вызванный фрагмент
+                в стек надо использовать метод addToBackStack(<имя_фрагмента?>)
+                 */
+            .commit()
+    }
+
+    private fun isOnePaneMode() = fragmentContainerView == null
 
     private fun setupLongClickListener() {
         // пример использования анонимного класса для реализации интерфейа
