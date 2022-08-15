@@ -1,7 +1,6 @@
 package com.proCourse.shoppinglist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,6 +15,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
+
 /*
     * В конструктор класса, который наследуется от фрагмента нельзя передавать
     * переменные, т.к эти данные будут правильно отображены только 1 раз т.к,
@@ -25,6 +25,14 @@ import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
 class ShopItemFragment : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishListener: OnEditingFinishListener
+    /*
+    для инициации действия активити из фрагмента используется открытый интерфейс, активити реализует
+    метод этого интерфейса и по его вызову выполняет его. Например показ уведомления о выполнении
+    действия. Т.о. активити, использующие фрагмент должны реализовывать его, иначе принято
+    выбрасывать исключение, в котором будет указано на необходимость реализации интерфейса.
+    Именно поэтому она не может быть нуллабельной
+     */
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
@@ -45,6 +53,19 @@ class ShopItemFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
+
+    /*
+    * очень важный метод, обозначающий момент прикрепления фрагмента к активити. Контекстом является
+    * сама активити, к которой происходит прикрепление. Именно поэтому активити, использующая фрагмент
+    * должна реализовывать интерфейс взаимодействия
+    * */
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is OnEditingFinishListener)
+            onEditingFinishListener = context
+        else
+            throw RuntimeException("Activity must implement OnEditingFinishListener")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +119,8 @@ class ShopItemFragment : Fragment() {
 
         // подписка на выявление завершения работы activity
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            // инициация действия
+            onEditingFinishListener.onEditingFinishListener()
             /*
             * имитация нажатия кнопки назад
             * activity (getActivity() в Java) дает ссылку на прикрепленное к фрагменту
@@ -188,8 +210,6 @@ class ShopItemFragment : Fragment() {
             }
             shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-
-
     }
 
     private fun initViews(view: View) {
@@ -198,6 +218,12 @@ class ShopItemFragment : Fragment() {
         etName = view.findViewById(R.id.et_name)
         etCount = view.findViewById(R.id.et_count)
         buttonSave = view.findViewById(R.id.save_button)
+    }
+
+    // вот интерфейс взаимодействия
+
+    interface OnEditingFinishListener{
+        fun onEditingFinishListener()
     }
 
     /*
