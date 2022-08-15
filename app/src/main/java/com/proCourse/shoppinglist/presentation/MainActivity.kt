@@ -2,6 +2,7 @@ package com.proCourse.shoppinglist.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,7 @@ import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newInt
 import com.proCourse.shoppinglist.presentation.recycklerview.ShopListAdapter
 import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener{
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
@@ -67,6 +68,11 @@ class MainActivity : AppCompatActivity() {
         setupClickListener()
 
         setupTouchHelper(rvShopList)
+    }
+
+    override fun onEditingFinishListener() {
+        Toast.makeText(this,"Success",Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
     private fun setupTouchHelper(rvShopList: RecyclerView) {

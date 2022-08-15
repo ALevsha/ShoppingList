@@ -14,7 +14,7 @@ import com.proCourse.shoppinglist.R
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener {
 
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = ShopItem.UNDEFINED_ID
@@ -105,5 +105,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, shopItemId)
             return intent
         }
+    }
+
+    override fun onEditingFinishListener() {
+        finish()
     }
 }
