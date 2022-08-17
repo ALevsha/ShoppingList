@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,28 @@ class ShopItemFragment : Fragment() {
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+    /*
+    * очень важный метод, обозначающий момент прикрепления фрагмента к активити. Контекстом является
+    * сама активити, к которой происходит прикрепление. Именно поэтому активити, использующая фрагмент
+    * должна реализовывать интерфейс взаимодействия
+    * */
+    override fun onAttach(context: Context) {
+        Log.d("LifeCycle", "onAttach")
+        super.onAttach(context)
+        if(context is OnEditingFinishListener) // если интерфейс реализован,
+                                               // явно приводим к типу интерфейса
+            onEditingFinishListener = context
+        else
+            throw RuntimeException("Activity must implement OnEditingFinishListener")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("LifeCycle", "onCreate")
+        super.onCreate(savedInstanceState)
+        // перенос в onCreate т.к параметры должны быть известны до создания view
+        parseParams()
+    }
+
     // В этом методе из макета создается view
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,32 +73,14 @@ class ShopItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // вот здесь:
+        Log.d("LifeCycle", "onCreateView")
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
-    }
-
-
-    /*
-    * очень важный метод, обозначающий момент прикрепления фрагмента к активити. Контекстом является
-    * сама активити, к которой происходит прикрепление. Именно поэтому активити, использующая фрагмент
-    * должна реализовывать интерфейс взаимодействия
-    * */
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if(context is OnEditingFinishListener)
-            onEditingFinishListener = context
-        else
-            throw RuntimeException("Activity must implement OnEditingFinishListener")
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // перенос в onCreate т.к параметры должны быть известны до создания view
-        parseParams()
     }
 
     // этот метод обозначает создание view на экране фрагмента и тот момент,
     // когда с этой view можно начинать работать
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Log.d("LifeCycle", "onViewCreated")
         super.onViewCreated(view, savedInstanceState)
         /*
         необходимо знать режим запуска
@@ -258,5 +263,40 @@ class ShopItemFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onStart() {
+        Log.d("LifeCycle", "onStart")
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Log.d("LifeCycle", "onResume")
+        super.onResume()
+    }
+
+    override fun onPause() {
+        Log.d("LifeCycle", "onPause")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        Log.d("LifeCycle", "onStop")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        Log.d("LifeCycle", "onDestroyView")
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        Log.d("LifeCycle", "onDestroy")
+        super.onDestroy()
+    }
+
+    override fun onDetach() {
+        Log.d("LifeCycle", "onDetach")
+        super.onDetach()
     }
 }
