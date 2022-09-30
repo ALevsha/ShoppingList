@@ -18,6 +18,7 @@ import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener{
 
+    // TODO - внедрить в приложение DataBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
     private var fragmentContainerView : FragmentContainerView? = null
