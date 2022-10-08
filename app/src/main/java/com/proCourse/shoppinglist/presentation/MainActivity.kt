@@ -3,6 +3,7 @@ package com.proCourse.shoppinglist.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.proCourse.shoppinglist.R
+import com.proCourse.shoppinglist.databinding.ActivityMainBinding
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newIntentAddItem
 import com.proCourse.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
@@ -18,14 +20,16 @@ import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener{
 
+    // TODO - внедрить в приложение DataBinding
+
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
-    private var fragmentContainerView : FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        fragmentContainerView = findViewById(R.id.shop_item_container)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {// подписка на liveData
@@ -33,9 +37,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
             * Запускается новый поток, в котором и происходят все вычисления относительно списков*/
             shopListAdapter.submitList(it)
         }
-        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+//        val buttonAddItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
 
-        buttonAddItem.setOnClickListener {
+        binding.buttonAddShopItem.setOnClickListener {
             if (isOnePaneMode()) {
                 val intent = newIntentAddItem(this)
                 startActivity(intent)
@@ -48,9 +52,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
     }
 
     private fun setupRecyclerView() {
-        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
+//        val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
         // with используется, если происходит работа с одним элементом, чтоб его не упоминать
-        with(rvShopList) {
+        with(binding.rvShopList) {
             shopListAdapter = ShopListAdapter()
             adapter = shopListAdapter
             recycledViewPool.setMaxRecycledViews(
@@ -67,7 +71,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
 
         setupClickListener()
 
-        setupTouchHelper(rvShopList)
+        setupTouchHelper(binding.rvShopList)
     }
 
     override fun onEditingFinishListener() {
@@ -135,7 +139,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
             .commit()
     }
 
-    private fun isOnePaneMode() = fragmentContainerView == null
+    private fun isOnePaneMode() = binding.shopItemContainer == null
 
     private fun setupLongClickListener() {
         // пример использования анонимного класса для реализации интерфейа

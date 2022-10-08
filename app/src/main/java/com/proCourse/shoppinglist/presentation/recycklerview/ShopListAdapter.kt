@@ -2,7 +2,11 @@ package com.proCourse.shoppinglist.presentation.recycklerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import com.proCourse.shoppinglist.R
+import com.proCourse.shoppinglist.databinding.ItemShopDisabledBinding
+import com.proCourse.shoppinglist.databinding.ItemShopEnabledBinding
 import com.proCourse.shoppinglist.domain.model.ShopItem
 
 class ShopListAdapter :
@@ -24,22 +28,41 @@ class ShopListAdapter :
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
-        // как создавать view
+        // как создавать view при разном viewType
         val layout = when (viewType) {
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             VIEW_TYPE_DISABLED -> R.layout.item_shop_disabled
             else -> throw RuntimeException("Unknown view type $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return ShopItemViewHolder(view)
+
+        /**
+         * viewHolder хранит ссылку на саму view, а также на элементы внутри самой view.
+         * DataBinding также хранит эти ссылки. Но RecyclerView не умеет с ними работать, поэтому
+         * объект Binding передается внутрь viewHolder, а далее уже берется для работы с ним
+         *
+         * При создании binding используется класс DataBindingUtil, куда в метод inflate, который
+         * работает с родительским классом ViewDataBinding, передается:
+         */
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context), // вставщик xml формы в view
+            layout,                             // саму форму
+            parent,                             // родителя
+            false                   // также не пристыковываем форму
+        )
+        return ShopItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         // как вставить значения внутри этого view
         val shopItem = getItem(position)
-        viewHolder.tvName.text = shopItem.name
-        viewHolder.tvCount.text = shopItem.count.toString()
-        viewHolder.itemView.setOnLongClickListener {
+
+        /**
+         * В случае с общими для всех viewType функций можно использовать приведенный к общему
+         * типу ViewDataBinding объект binding
+         */
+        val binding = viewHolder.binding
+
+        binding.root.setOnLongClickListener {
             //viewModel.changeEnableState(shopItem) нельзя в адаптере обращаться к методам activity
             // для выполнения логики используется связка интерфейс-реализация
             //onShopItemLongClickListener?.onShopItemLongClick(shopItem)
@@ -47,8 +70,22 @@ class ShopListAdapter :
             // invoke - перегрузка операндов
             true
         }
-        viewHolder.itemView.setOnClickListener {
+        binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)
+        }
+        /**
+         * однако в частных случаях, когда возможно другое поведение, сравнивают определенный класс
+         * DataBinding и действуют, в зависимости от разных случаев по разному. Тут не явное
+         * приведение типов, а сравнение с действительным наименованием класса. Иначе не будет
+         * доступа к ссылкам внутренних view, т.к у родительского класса их нет
+         */
+        when (binding) {
+            is ItemShopDisabledBinding -> {
+                binding.shopItem = shopItem
+            }
+            is ItemShopEnabledBinding -> {
+                binding.shopItem = shopItem
+            }
         }
     }
 
@@ -60,7 +97,6 @@ class ShopListAdapter :
         else
             VIEW_TYPE_DISABLED
     }
-
 
 
     companion object {

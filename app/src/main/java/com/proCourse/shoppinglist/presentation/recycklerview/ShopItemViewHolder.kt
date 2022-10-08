@@ -1,11 +1,12 @@
 package com.proCourse.shoppinglist.presentation.recycklerview
 
-import android.view.View
-import android.widget.TextView
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import com.proCourse.shoppinglist.R
 
-class ShopItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    val tvName = view.findViewById<TextView>(R.id.tv_name)
-    val tvCount = view.findViewById<TextView>(R.id.tv_count)
-}
+/**
+ * Потому что класс ViewHolder не умеет работать с DataBinding, объект DataBinding подается
+ * на вход
+ */
+//                                                       наследуемся от ViewHolder, которому на вход
+//                       объект на вход                  приходит view
+class ShopItemViewHolder(val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)

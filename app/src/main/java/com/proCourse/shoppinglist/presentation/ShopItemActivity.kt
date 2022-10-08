@@ -8,9 +8,11 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputLayout
 import com.proCourse.shoppinglist.R
+import com.proCourse.shoppinglist.databinding.ActivityShopItemBinding
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel
 

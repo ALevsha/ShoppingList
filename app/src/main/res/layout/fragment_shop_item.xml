@@ -1,78 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.ShopItemFragment">
-    <!-- при копировании из активити во фрагмент меняется контекст на файл класса фрагмента -->
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.proCourse.shoppinglist.presentation.viewmodel.ShopItemViewModel" />
 
-    <!-- TextInputLayout и TextInputEditText работают вместе,
-     чтобы поддерживались анимации подсказки и возникновения
-     ошибок-->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/til_count"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed">
-        <!-- chain_style - атрибут, который используется, если в constraintLayout
-         надо расположить элементы в цепочку. элементы по краям привязывают
-         к соседним объектам (борта,верхнюю часть view к верхней части экрана,
-         нижнюю часть view - к верхней части view снизу, верхнюю часть view
-         снизу - к нижней части view сверху, нижнюю часть view снизу -
-         к ничжней части экрана.
-         Если установить атрибут packed - то элементы
-         цепочки будут располагаться максимально близко друг к другу,
-         если spread - элементы будут равнмерно рапределены на экране,
-         если spread-inside - элементы будут максимально удалены друг
-         от друга-->
+    </data>
 
-        <!-- TextInputEditText - наследник обычного EditText-->
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_name"
-            android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presentation.ShopItemFragment">
+        <!-- при копировании из активити во фрагмент меняется контекст на файл класса фрагмента -->
+
+        <!-- TextInputLayout и TextInputEditText работают вместе,
+         чтобы поддерживались анимации подсказки и возникновения
+         ошибок-->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Name:"
-            android:inputType="textCapWords" />
-        <!-- hint - подсказка
-             inputType - вид данных для ввода,
-             textCupWords - первая буква автоматически становится заглавной-->
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            app:errorInputName="@{viewModel.errorInputName}"
+            app:layout_constraintBottom_toTopOf="@+id/til_count"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed">
+            <!-- chain_style - атрибут, который используется, если в constraintLayout
+             надо расположить элементы в цепочку. элементы по краям привязывают
+             к соседним объектам (борта,верхнюю часть view к верхней части экрана,
+             нижнюю часть view - к верхней части view снизу, верхнюю часть view
+             снизу - к нижней части view сверху, нижнюю часть view снизу -
+             к ничжней части экрана.
+             Если установить атрибут packed - то элементы
+             цепочки будут располагаться максимально близко друг к другу,
+             если spread - элементы будут равнмерно рапределены на экране,
+             если spread-inside - элементы будут максимально удалены друг
+             от друга-->
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <!-- TextInputEditText - наследник обычного EditText-->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.shopItem.name}"
+                android:hint="Name:"
+                android:inputType="textCapWords" />
+            <!-- hint - подсказка
+                 inputType - вид данных для ввода,
+                 textCupWords - первая буква автоматически становится заглавной-->
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_count"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/save_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/til_name">
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_count"
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_count"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Count:"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            app:errorInputCount="@{viewModel.errorInputCount}"
+            app:layout_constraintBottom_toTopOf="@+id/save_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_name">
 
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{String.valueOf(viewModel.shopItem.count)}"
+                android:hint="Count:"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
