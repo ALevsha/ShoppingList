@@ -1,19 +1,20 @@
 package com.proCourse.shoppinglist.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.proCourse.shoppinglist.data.ShopListRepositoryImpl
-import com.proCourse.shoppinglist.domain.usecase.DeleteShopItemUseCase
-import com.proCourse.shoppinglist.domain.usecase.GetShopListUseCase
 import com.proCourse.shoppinglist.domain.model.ShopItem
+import com.proCourse.shoppinglist.domain.usecase.DeleteShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
+import com.proCourse.shoppinglist.domain.usecase.GetShopListUseCase
 
 
 /**
  * Наследуемся от ViewModel, т.к. контекст не будет использоваться, иначе наследуемся от AndroidViewModel(application)
  */
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository = ShopListRepositoryImpl // неправильно, т.к. реализация зависит о data
+    private val repository = ShopListRepositoryImpl(application) // неправильно, т.к. реализация зависит о data
                                                     // чего не должно быть, правильно будет
                                                     // с использованием инъекции зависимостей
                                                     // Автор считает, что presentation и data

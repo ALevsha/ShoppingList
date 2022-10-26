@@ -1,6 +1,8 @@
 package com.proCourse.shoppinglist.presentation.viewmodel
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,8 +12,8 @@ import com.proCourse.shoppinglist.domain.usecase.AddShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.GetShopItemUseCase
 
-class ShopItemViewModel : ViewModel() {
-    private val repository = ShopListRepositoryImpl
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(repository)
     private val addShopItemUseCase = AddShopItemUseCase(repository)
