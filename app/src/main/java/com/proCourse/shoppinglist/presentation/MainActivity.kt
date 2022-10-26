@@ -20,8 +20,6 @@ import com.proCourse.shoppinglist.presentation.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListener{
 
-    // TODO - внедрить в приложение DataBinding
-
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var binding: ActivityMainBinding
@@ -31,7 +29,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishListen
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupRecyclerView()
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {// подписка на liveData
             /*изменения логики - в RecyclerView...ListAdapter по другому присваиваются списки:
             * Запускается новый поток, в котором и происходят все вычисления относительно списков*/
