@@ -11,8 +11,12 @@ import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.domain.usecase.AddShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.GetShopItemUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
+class ShopItemViewModel(application: Application ) : AndroidViewModel(application) {
     private val repository = ShopListRepositoryImpl(application)
 
     private val getShopItemUseCase = GetShopItemUseCase(repository)
@@ -46,9 +50,17 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     val shouldCloseScreen: LiveData<Unit>
         get() = _shouldCloseScreen
 
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     fun getShopItem(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItem(shopItemId)
-        _shopItem.value = item
+        scope.launch {
+            val item = getShopItemUseCase.getShopItem(shopItemId)
+            /**
+             * LiveData.value исполняется только на главном потоке, postValue - в любом
+             */
+            _shopItem.postValue(item)
+        }
+
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -56,9 +68,12 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val count = parseCount(inputCount)
         val fieldsValid = validateInput(name, count)
         if (fieldsValid) {
-            val shopItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(shopItem = shopItem)
-            finishWork()
+            scope.launch {
+                val shopItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(shopItem = shopItem)
+                finishWork()
+            }
+
         }
     }
 
@@ -69,9 +84,12 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         if (fieldsValid) {
             _shopItem.value?.let {// если объект получен успешно, и не == null,
                 // выполнится лямбда в let {}
-                val item = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(item)
-                finishWork()
+                scope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopItemUseCase.editShopItem(item)
+                    finishWork()
+                }
+
             }
         }
     }
@@ -112,6 +130,11 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun finishWork() {
-        _shouldCloseScreen.value = Unit
+        _shouldCloseScreen.postValue(Unit)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }

@@ -7,6 +7,10 @@ import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.domain.usecase.DeleteShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.EditShopItemUseCase
 import com.proCourse.shoppinglist.domain.usecase.GetShopListUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 
 /**
@@ -30,14 +34,36 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
                                                      // и на него можно ПОДПИСАТЬСЯ для получения
                                                      // объектов, которые в него помещают
 
+    /**
+     * CoroutineScope - область выполнения корутины. На вход идет контекст корутины - спец
+     * составляющая корутины. Им выступает объект Dispatchers, в котором указывается, в каком
+     * потоке будет исполняться корутина:
+     * Main - в главном потоке;
+     * IO - в др. потоке, хорошо подходит для чтения/записи. Пул потоков м.б расширен до 64(настраиваетс)
+     * Default - в др. потоке, подходит для долгих операций на одном потоке. Пул м.б расширен
+     *      до количества ядер в процессоре
+     * Unconfined - ХЗ
+     */
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     fun deleteShopItem(shopItem: ShopItem){
-        deleteShopItemUseCase.deleteShopItem(shopItem)
+        scope.launch {
+            deleteShopItemUseCase.deleteShopItem(shopItem)
+        }
+
     }
 
     fun changeEnableState(shopItem: ShopItem){
         // у data class метод copy переопределен
         val newItem = shopItem.copy(enabled = !shopItem.enabled) // т.к. enabled val
-        editShopItemUseCase.editShopItem(newItem)
+        scope.launch {
+            editShopItemUseCase.editShopItem(newItem)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }

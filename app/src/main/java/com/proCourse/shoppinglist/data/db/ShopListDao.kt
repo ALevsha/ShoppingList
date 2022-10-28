@@ -14,7 +14,8 @@ import androidx.room.Query
 interface ShopListDao {
 
     /**
-     *  запрос получение всей таблицы
+     *  запрос получение всей таблицы. Возвращает LiveData => уже работает в другом потоке,
+     *  следовательно нет необходимости помечать модификатором suspend
      */
     @Query("SELECT * FROM shop_items")
     fun getShopList(): LiveData<List<ShopItemDBModel>>
@@ -23,17 +24,17 @@ interface ShopListDao {
      * добавление элемента, где, если есть коллизия по первичному ключу, заменить
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addShopItem(shopItemDBModel: ShopItemDBModel)
+    suspend fun addShopItem(shopItemDBModel: ShopItemDBModel)
 
     /**
      * удаление из списка элементов, где первичный ключ (id) = id
      */
     @Query("DELETE FROM shop_items WHERE id=:shopItemId")
-    fun deleteShopItem(shopItemId: Int)
+    suspend fun deleteShopItem(shopItemId: Int)
 
     /**
      * получение элемента из таблицы, где первичный ключ (id) = id, но не более 1 элемента
      */
     @Query("SELECT * FROM shop_items WHERE id=:shopItemId LIMIT 1")
-    fun getShopItem(shopItemId: Int): ShopItemDBModel
+    suspend fun getShopItem(shopItemId: Int): ShopItemDBModel
 }
