@@ -2,6 +2,7 @@ package com.proCourse.shoppinglist.presentation.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.proCourse.shoppinglist.data.ShopListRepositoryImpl
 import com.proCourse.shoppinglist.domain.model.ShopItem
 import com.proCourse.shoppinglist.domain.usecase.DeleteShopItemUseCase
@@ -45,10 +46,14 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
      * Unconfined - ХЗ
      */
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+//    private val scope = CoroutineScope(Dispatchers.IO)
+
+    /**
+     * для ViewModel был придуман свой scope, который не надо отменять в методе onCleared
+     */
 
     fun deleteShopItem(shopItem: ShopItem){
-        scope.launch {
+        viewModelScope.launch {
             deleteShopItemUseCase.deleteShopItem(shopItem)
         }
 
@@ -57,13 +62,13 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     fun changeEnableState(shopItem: ShopItem){
         // у data class метод copy переопределен
         val newItem = shopItem.copy(enabled = !shopItem.enabled) // т.к. enabled val
-        scope.launch {
+        viewModelScope.launch {
             editShopItemUseCase.editShopItem(newItem)
         }
     }
 
-    override fun onCleared() {
+/*    override fun onCleared() {
         super.onCleared()
         scope.cancel()
-    }
+    }*/
 }
