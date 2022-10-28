@@ -47,7 +47,6 @@ abstract class AppDatabase: RoomDatabase() {
                     AppDatabase::class.java,    // класс БД
                     DB_NAME                     // имя БД
                 )
-                    .allowMainThreadQueries()
                     .build()
                 INSTANCE = db
                 // возвращается не INSTANCE т.к он является нуллабельным объектом, а возвращаемый

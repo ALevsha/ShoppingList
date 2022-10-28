@@ -22,22 +22,27 @@ class ShopListRepositoryImpl(
     private val mapper = ShopListMapper()
 
 
-    override fun addShopItem(shopItem: ShopItem) {
+    /**
+     * Для использования корутин методы должны быть помечены модификатором suspend
+     * Также такими должны быть функции domain-слоя
+     */
+
+     override suspend fun addShopItem(shopItem: ShopItem) {
         shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
     }
 
-    override fun deleteShopItem(shopItem: ShopItem) {
+    override suspend fun deleteShopItem(shopItem: ShopItem) {
         shopListDao.deleteShopItem(mapper.mapEntityToDbModel(shopItem).id)
     }
 
-    override fun editShopItem(shopItem: ShopItem) {
+    override suspend fun editShopItem(shopItem: ShopItem) {
         /**
          * повтор, т.к в Dao запрос поразумевает в случае коллизии замену элемента
          * */
         shopListDao.addShopItem(mapper.mapEntityToDbModel(shopItem))
     }
 
-    override fun getShopItem(shopItemId: Int): ShopItem {
+    override suspend fun getShopItem(shopItemId: Int): ShopItem {
         val dbModel = shopListDao.getShopItem(shopItemId)
         return mapper.mapDbModelToEntity(dbModel)
     }
